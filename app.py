@@ -209,10 +209,7 @@ def display_yield_prediction_tab():
             plt.close(fig)
 
         with st.expander("Voir le détail des prédictions par champ"):
-            # st.table dépend aussi de pyarrow en interne. si l'erreur DLL
-            # revient, remplacer la ligne suivante par :
-            # st.text(result["predictions_df"].to_string(index=False))
-            st.table(result["predictions_df"])
+            st.text(result["predictions_df"].to_string(index=False))
 
 
 def display_results(bands: dict, meta: dict | None = None):
