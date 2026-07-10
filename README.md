@@ -1,5 +1,7 @@
 # AgriculAI — Suivi de végétation par télédétection Sentinel-2
 
+Accessible via : https://agriculai.streamlit.app
+
 Pipeline complet et application interactive de calcul d'indices de
 végétation à partir de données satellite Sentinel-2, avec acquisition
 automatisée, zonage par machine learning (K-Means) et démonstration de
