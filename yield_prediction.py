@@ -82,7 +82,11 @@ def generate_synthetic_yield_dataset(n_years: int = DEFAULT_N_YEARS, n_fields: i
     return pd.DataFrame(rows)
 
 
-def run_yield_prediction_demo(test_year: int = None) -> dict:
+def run_yield_prediction_demo(test_year: int = None, 
+                              n_estimators: int = 50, 
+                              max_depth: int = 3, 
+                              learning_rate: float = 0.1, 
+                              subsample: float = 0.8) -> dict:
     """
     exécute la démonstration complète : génère les données, sépare
     entraînement/test par année (jamais aléatoirement, cf toolkit.temporal_split),
@@ -118,18 +122,28 @@ def run_yield_prediction_demo(test_year: int = None) -> dict:
     model, metrics, predictions = tk.train_xgboost_yield_model(
         train[feature_cols], train[target_col],
         test[feature_cols], test[target_col],
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        learning_rate=learning_rate,
+        subsample=subsample
     )
 
     importance = tk.feature_importance_table(model, feature_cols)
 
+    # ... code existant ...
     predictions_df = test[["field_id", target_col]].copy()
     predictions_df["predicted_yield"] = predictions
     predictions_df["error"] = round(predictions_df["predicted_yield"] - predictions_df[target_col], 2)
+
+    train_predictions = model.predict(train[feature_cols])
+    train_predictions_df = train[["field_id", target_col]].copy()
+    train_predictions_df["predicted_yield"] = train_predictions
 
     return {
         "dataset": df,
         "metrics": metrics,
         "feature_importance": importance,
         "predictions_df": predictions_df,
+        "train_predictions_df": train_predictions_df,
         "test_year": test_year,
     }

@@ -397,24 +397,34 @@ def temporal_split(df: pd.DataFrame, year_col: str, test_years: list):
     return train, test
 
 
-def train_xgboost_yield_model(X_train, y_train, X_test, y_test, **xgb_params):
-    """
-    entraîne un XGBoost de régression et renvoie le modèle ainsi que ses
-    métriques d'évaluation (RMSE, MAE, R2).
-    """
-    default_params = dict(n_estimators=300, max_depth=5, learning_rate=0.05, random_state=42)
-    default_params.update(xgb_params)
+import xgboost as xgb
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import numpy as np
 
-    model = xgb.XGBRegressor(**default_params)
+def train_xgboost_yield_model(X_train, y_train, X_test, y_test, 
+                              n_estimators=50, max_depth=3, learning_rate=0.1, subsample=0.8):
+    """
+    Entraîne un modèle XGBoost avec des hyperparamètres dynamiques.
+    """
+    model = xgb.XGBRegressor(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        learning_rate=learning_rate,
+        subsample=subsample,
+        random_state=42,
+        n_jobs=-1
+    )
+    
     model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
+    predictions = model.predict(X_test)
+    
     metrics = {
-        "RMSE": round(float(np.sqrt(mean_squared_error(y_test, y_pred))), 3),
-        "MAE": round(float(mean_absolute_error(y_test, y_pred)), 3),
-        "R2": round(float(r2_score(y_test, y_pred)), 3),
+        "RMSE": round(np.sqrt(mean_squared_error(y_test, predictions)), 2),
+        "MAE": round(mean_absolute_error(y_test, predictions), 2),
+        "R2": round(r2_score(y_test, predictions), 2)
     }
-    return model, metrics, y_pred
+    
+    return model, metrics, predictions
 
 
 def feature_importance_table(model, feature_names) -> pd.DataFrame:
