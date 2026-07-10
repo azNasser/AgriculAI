@@ -1,0 +1,6 @@
+_cache_*.nc
+__pycache__/
+.ipynb_checkpoints/
+.vscode/
+*.pyc
+.streamlit/secrets.toml

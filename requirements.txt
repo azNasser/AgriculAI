@@ -1,0 +1,1 @@
+pip list --format=freeze | findstr /i "rasterio numpy pandas matplotlib scipy scikit-learn xgboost streamlit openeo xarray netCDF4 requests"
